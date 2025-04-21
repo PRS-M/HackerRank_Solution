@@ -16,7 +16,6 @@ namespace HackerRank_Exercises;
 
 class EmasSupercomputerResult
 {
-
     /*
      * Complete the 'twoPluses' function below.
      *
@@ -31,63 +30,69 @@ class EmasSupercomputerResult
 
     private static int GetMaxArea(List<string> grid)
     {
-        List<PlusPoint> listOfAllValidPluses = [];
-        List<PlusPoint> listOfValidPlusesGreaterThanOne = [];
+        (List<PlusPoint> allValidPluses, List<PlusPoint> allValidPlusesGreaterThanOne) = GetValidPluses(grid);
+        return GetMaxArea(allValidPluses, allValidPlusesGreaterThanOne);
+    }
 
-        int largestExpansionSize = 0;
-        for (int i = 0; i < grid.Count; i++)
+    private static int GetMaxArea(List<PlusPoint> allValidPluses, List<PlusPoint> allValidPlusesGreaterThanOne)
+    {
+        List<int> areas = [0];
+        foreach (PlusPoint plusPoint in allValidPlusesGreaterThanOne)
         {
-            string row = grid[i];
-            for (int j = 0; j < row.Length; j++)
+            areas = GetNonInterferingAreas(allValidPlusesGreaterThanOne, plusPoint);
+
+            if (areas.Count == 0)
             {
-                bool isGoodCell = IsGoodCell(row[j]);
+                List<int> additionalAreas = GetNonInterferingAreas(allValidPluses, plusPoint);
+                areas.AddRange(additionalAreas);
+            }
+        }
+
+        return areas.Max();
+    }
+
+    private static (List<PlusPoint> allValidPluses, List<PlusPoint> allValidPlusesGreaterThanOne) GetValidPluses(List<string> grid)
+    {
+        List<PlusPoint> allValidPluses = [];
+        List<PlusPoint> allValidPlusesGreaterThanOne = [];
+
+        for (int rowIndex = 0; rowIndex < grid.Count; rowIndex++)
+        {
+            string row = grid[rowIndex];
+            for (int columnIndex = 0; columnIndex < row.Length; columnIndex++)
+            {
+                bool isGoodCell = IsGoodCell(row[columnIndex]);
 
                 if (isGoodCell)
                 {
-                    int expansionSize = CalculateExpansionLimit(i, j, grid);
+                    int expansionSize = CalculateExpansionLimit(rowIndex, columnIndex, grid);
 
-                    if (expansionSize > 0 && expansionSize >= largestExpansionSize)
+                    if (expansionSize > 0)
                     {
-                        listOfValidPlusesGreaterThanOne.Add(new PlusPoint(j, i, expansionSize));
+                        allValidPlusesGreaterThanOne.Add(new PlusPoint(columnIndex, rowIndex, expansionSize));
                     }
 
-                    if (expansionSize > largestExpansionSize)
-                    {
-                        largestExpansionSize = expansionSize;
-                    }
-
-
-                    listOfAllValidPluses.Add(new PlusPoint(j, i, expansionSize));
+                    allValidPluses.Add(new PlusPoint(columnIndex, rowIndex, expansionSize));
                 }
             }
         }
 
-        List<int> Areas = [];
-        foreach (PlusPoint plusPoint in listOfValidPlusesGreaterThanOne)
+        return (allValidPluses, allValidPlusesGreaterThanOne);
+    }
+
+    private static List<int> GetNonInterferingAreas(List<PlusPoint> listOfValidPluses, PlusPoint plusPoint)
+    {
+        List<int> areas = [];
+        foreach (PlusPoint secondPlusPoint in listOfValidPluses)
         {
-            foreach (PlusPoint secondPlusPoint in listOfValidPlusesGreaterThanOne)
+            bool isNotInterfering = !plusPoint.IsInterfering(secondPlusPoint);
+            if (isNotInterfering)
             {
-                bool isNotInterfering = !plusPoint.IsInterfering(secondPlusPoint);
-                if (isNotInterfering)
-                {
-                    Areas.Add(plusPoint.Area * secondPlusPoint.Area);
-                }
-            }
-
-            if (Areas.Count == 0)
-            {
-                foreach (PlusPoint secondPlusPoint in listOfAllValidPluses)
-                {
-                    bool isNotInterfering = !plusPoint.IsInterfering(secondPlusPoint);
-                    if (isNotInterfering)
-                    {
-                        Areas.Add(plusPoint.Area * secondPlusPoint.Area);
-                    }
-                }
+                areas.Add(plusPoint.Area * secondPlusPoint.Area);
             }
         }
 
-        return Areas.Max();
+        return areas;
     }
 
     private static bool IsGoodCell(char cell)
@@ -144,7 +149,7 @@ internal readonly record struct PlusPoint(int X, int Y, int ExpansionSize)
     {
         List<(int, int)> coordinates = [(X, Y)];
 
-        for (int i = 0; i < ExpansionSize; i++)
+        for (int i = 0; i <= ExpansionSize; i++)
         {
             coordinates.Add((X - i, Y));
             coordinates.Add((X + i, Y));
