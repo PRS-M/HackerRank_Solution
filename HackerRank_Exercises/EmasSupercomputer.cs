@@ -30,31 +30,25 @@ class EmasSupercomputerResult
 
     private static int GetMaxArea(List<string> grid)
     {
-        (List<PlusPoint> allValidPluses, List<PlusPoint> allValidPlusesGreaterThanOne) = GetValidPluses(grid);
-        return GetMaxArea(allValidPluses, allValidPlusesGreaterThanOne);
+        List<PlusPoint> allValidPluses = GetValidPluses(grid);
+        return GetMaxArea(allValidPluses);
     }
 
-    private static int GetMaxArea(List<PlusPoint> allValidPluses, List<PlusPoint> allValidPlusesGreaterThanOne)
+    private static int GetMaxArea(List<PlusPoint> allValidPluses)
     {
         List<int> areas = [0];
-        foreach (PlusPoint plusPoint in allValidPlusesGreaterThanOne)
+        foreach (PlusPoint plusPoint in allValidPluses)
         {
-            areas = GetNonInterferingAreas(allValidPlusesGreaterThanOne, plusPoint);
-
-            if (areas.Count == 0)
-            {
-                List<int> additionalAreas = GetNonInterferingAreas(allValidPluses, plusPoint);
-                areas.AddRange(additionalAreas);
-            }
+            List<int> areasForGivenRun = GetNonInterferingAreas(allValidPluses, plusPoint);
+            areas.AddRange(areasForGivenRun);
         }
 
         return areas.Max();
     }
 
-    private static (List<PlusPoint> allValidPluses, List<PlusPoint> allValidPlusesGreaterThanOne) GetValidPluses(List<string> grid)
+    private static List<PlusPoint> GetValidPluses(List<string> grid)
     {
         List<PlusPoint> allValidPluses = [];
-        List<PlusPoint> allValidPlusesGreaterThanOne = [];
 
         for (int rowIndex = 0; rowIndex < grid.Count; rowIndex++)
         {
@@ -66,18 +60,15 @@ class EmasSupercomputerResult
                 if (isGoodCell)
                 {
                     int expansionSize = CalculateExpansionLimit(rowIndex, columnIndex, grid);
-
-                    if (expansionSize > 0)
+                    for (int i = 0; i <= expansionSize; i++)
                     {
-                        allValidPlusesGreaterThanOne.Add(new PlusPoint(columnIndex, rowIndex, expansionSize));
+                        allValidPluses.Add(new PlusPoint(columnIndex, rowIndex, i));
                     }
-
-                    allValidPluses.Add(new PlusPoint(columnIndex, rowIndex, expansionSize));
                 }
             }
         }
 
-        return (allValidPluses, allValidPlusesGreaterThanOne);
+        return allValidPluses;
     }
 
     private static List<int> GetNonInterferingAreas(List<PlusPoint> listOfValidPluses, PlusPoint plusPoint)
@@ -211,14 +202,31 @@ public class EmasSupercomputerSolution
         //     "BGBBGB",
         // ];
 
+        // List<string> grid =
+        // [
+        //     "GGGGGG",
+        //     "GBBBGB",
+        //     "GGGGGG",
+        //     "GGBBGB",
+        //     "GGGGGG",
+        // ];
+        
+        // Ans: 81
         List<string> grid =
         [
-            "GGGGGG",
-            "GBBBGB",
-            "GGGGGG",
-            "GGBBGB",
-            "GGGGGG",
+            "BBBGBGBBB",
+            "BBBGBGBBB",
+            "BBBGBGBBB",
+            "GGGGGGGGG",
+            "BBBGBGBBB",
+            "BBBGBGBBB",
+            "GGGGGGGGG",
+            "BBBGBGBBB",
+            "BBBGBGBBB",
+            "BBBGBGBBB"
         ];
+
+
 
         int result = EmasSupercomputerResult.TwoPluses(grid);
         return result;
