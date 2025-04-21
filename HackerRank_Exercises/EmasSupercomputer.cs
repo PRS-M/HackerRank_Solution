@@ -37,9 +37,13 @@ class EmasSupercomputerResult
     private static int GetMaxArea(List<PlusPoint> allValidPluses)
     {
         List<int> areas = [0];
-        foreach (PlusPoint plusPoint in allValidPluses)
+        int limit = allValidPluses.Count % 2 == 0
+            ? allValidPluses.Count / 2
+            : allValidPluses.Count / 2 + 1;
+
+        for (int i = 0; i < limit; i++)
         {
-            List<int> areasForGivenRun = GetNonInterferingAreas(allValidPluses, plusPoint);
+            List<int> areasForGivenRun = GetNonInterferingAreas(allValidPluses, allValidPluses[i]);
             areas.AddRange(areasForGivenRun);
         }
 
@@ -59,11 +63,8 @@ class EmasSupercomputerResult
 
                 if (isGoodCell)
                 {
-                    int expansionSize = CalculateExpansionLimit(rowIndex, columnIndex, grid);
-                    for (int i = 0; i <= expansionSize; i++)
-                    {
-                        allValidPluses.Add(new PlusPoint(columnIndex, rowIndex, i));
-                    }
+                    List<PlusPoint> validPluses = GetValidPlusesUpToMax(rowIndex, columnIndex, grid);
+                    allValidPluses.AddRange(validPluses);
                 }
             }
         }
@@ -91,10 +92,12 @@ class EmasSupercomputerResult
         return cell == 'G';
     }
 
-    private static int CalculateExpansionLimit(int rowNumber, int columnNumber, List<string> grid)
+    private static List<PlusPoint> GetValidPlusesUpToMax(int rowNumber, int columnNumber, List<string> grid)
     {
         int expansionRunNumber = 0;
         bool canExpand;
+        List<PlusPoint> validPluses = [new PlusPoint(rowNumber, columnNumber, expansionRunNumber)];
+
         do
         {
             int nextRowUp = rowNumber - 1 - expansionRunNumber;
@@ -125,10 +128,11 @@ class EmasSupercomputerResult
             if (canExpand)
             {
                 expansionRunNumber++;
+                validPluses.Add(new PlusPoint(rowNumber, columnNumber, expansionRunNumber));
             }
         } while (canExpand);
 
-        return expansionRunNumber;
+        return validPluses;
     }
 }
 
