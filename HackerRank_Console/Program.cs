@@ -4,10 +4,10 @@ namespace HackerRank_Console;
 
 class Program
 {
-    static int Main(string[] args)
+    static void Main(string[] args)
     {
         Console.WriteLine("Hello, World!");
 
-        return NonDivisibleSubsetSolution.Main(args);
+        EmasSupercomputerSolution.Main(args);
     }
 }
