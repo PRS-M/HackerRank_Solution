@@ -8,6 +8,6 @@ class Program
     {
         Console.WriteLine("Hello, World!");
 
-        EmasSupercomputerSolution.Main(args);
+        QueensAttackSolution.Main(args);
     }
 }
