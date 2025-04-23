@@ -21,25 +21,28 @@ class QueensAttackResult
     public static int QueensAttack(int n, int k, int r_q, int c_q, List<List<int>> obstacles)
     {
         Point queenPosition = new Point(c_q, r_q);
+
+        // Vectors from queen to obstacles.
         List<Vector> queenToObstacleCrossVectors = [];
         List<Vector> queenToHypotenuseObstacleVectors = [];
 
         for (int i = 0; i < obstacles.Count; i++)
         {
             Point obstaclePoint = new Point(obstacles[i][1], obstacles[i][0]);
-            Vector vector = new Vector(queenPosition, obstaclePoint);
+            Vector vector = new Vector(queenPosition, obstaclePoint)
+            {
+                Obstacle = true
+            };
 
             // Add only blocking obstacles (8 directions).
             // This way non-blocking obstacles are removed.
             if (vector.X == 0 && vector.Y != 0
                 || vector.Y == 0 && vector.X != 0)
             {
-                vector = ExtractMovementFromObstacleVector(vector);
                 queenToObstacleCrossVectors.Add(vector);
             }
             else if (Math.Abs(vector.X) == Math.Abs(vector.Y))
             {
-                vector = ExtractMovementFromObstacleVector(vector);
                 queenToHypotenuseObstacleVectors.Add(vector);
             }
 
@@ -47,6 +50,7 @@ class QueensAttackResult
             Console.WriteLine($"Vector: {vector.X}, {vector.Y}");
         }
 
+        // Vectors from queen to the boundaries (last cell inclusive)
         List<Vector> queenToHypotenuseBoundaryVectors = GetHypotenuseBoundaryVectors(n, queenPosition);
         List<Vector> queenToBoundaryVectors = GetBoundaryVectors(n, queenPosition);
 
@@ -171,10 +175,7 @@ class QueensAttackResult
 
         if (recalculated)
         {
-            Vector newVector = new(vector.X, vector.Y)
-            {
-                Recalculated = true
-            };
+            Vector newVector = new(vector.X, vector.Y);
 
             return newVector;
         }
@@ -242,7 +243,7 @@ internal record struct Vector
 
     public int X { get; set; }
     public int Y { get; set; }
-    public bool Recalculated { get; set; } = false;
+    public bool Obstacle { get; set; } = false;
 
     public static Vector operator +(Vector a, Vector b)
     {
