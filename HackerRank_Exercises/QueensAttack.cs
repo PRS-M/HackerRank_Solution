@@ -18,6 +18,7 @@ class QueensAttackResult
      *  5. 2D_INTEGER_ARRAY obstacles
      */
 
+    // To make it more difficult -> No LINQ usage
     public static int QueensAttack(int n, int k, int r_q, int c_q, List<List<int>> obstacles)
     {
         Point queenPosition = new Point(c_q, r_q);
@@ -58,8 +59,6 @@ class QueensAttackResult
         List<Vector> queenToBoundaryVectorsCopy = new(queenToBoundaryVectors);
 
         List<Vector> possibleMoves = [];
-        _ = queenToObstacleCrossVectors;
-        _ = queenToHypotenuseObstacleVectors;
 
         if (queenToObstacleCrossVectors.Count == 0)
         {
@@ -70,9 +69,8 @@ class QueensAttackResult
             for (int i = 0; i < queenToBoundaryVectors.Count; i++)
             {
                 Vector queenToBoundaryVector = queenToBoundaryVectors[i];
-                for (int j = 0; j < queenToObstacleCrossVectors.Count; j++)
+                foreach (Vector queenToObstacleCrossVector in queenToObstacleCrossVectors)
                 {
-                    Vector queenToObstacleCrossVector = queenToObstacleCrossVectors[j];
                     if (IsSameDirection(queenToBoundaryVector, queenToObstacleCrossVector))
                     {
                         possibleMoves.Add(queenToObstacleCrossVector);
@@ -80,6 +78,11 @@ class QueensAttackResult
                     }
                 }
             }
+        }
+
+        if (queenToObstacleCrossVectors.Count != 0)
+        {
+            possibleMoves.AddRange(queenToBoundaryVectorsCopy);
         }
 
         if (queenToHypotenuseObstacleVectors.Count == 0)
@@ -91,9 +94,8 @@ class QueensAttackResult
             for (int i = 0; i < queenToHypotenuseBoundaryVectors.Count; i++)
             {
                 Vector queenToHypotenuseBoundaryVector = queenToHypotenuseBoundaryVectors[i];
-                for (int j = 0; j < queenToHypotenuseObstacleVectors.Count; j++)
+                foreach (Vector queenToHypotenuseObstacleVector in queenToHypotenuseObstacleVectors)
                 {
-                    Vector queenToHypotenuseObstacleVector = queenToHypotenuseObstacleVectors[j];
                     if (IsSameDirection(queenToHypotenuseBoundaryVector, queenToHypotenuseObstacleVector))
                     {
                         possibleMoves.Add(queenToHypotenuseObstacleVector);
@@ -103,6 +105,11 @@ class QueensAttackResult
             }
         }
 
+        if (queenToHypotenuseObstacleVectors.Count != 0)
+        {
+            possibleMoves.AddRange(queenToBoundaryVectorsCopy);
+        }
+        
         return 0;
     }
 
