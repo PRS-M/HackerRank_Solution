@@ -3,7 +3,7 @@ using HackerRank_Exercises.Helpers;
 
 namespace HackerRank_Exercises;
 
-class QueensAttackResult
+public class QueensAttackResult
 {
 
     /*
@@ -71,7 +71,7 @@ class QueensAttackResult
 
         // Calculate the amount of fields available for movement.
         int totalLength = GetTotalLength(possibleMoves);
-Console.WriteLine(totalLength);
+        Console.WriteLine(totalLength);
         return totalLength;
     }
 
@@ -304,31 +304,25 @@ internal record struct Point
 
 public class QueensAttackSolution
 {
-        public static void Main(string[] args)
+    public static void Main(string[] args)
     {
-        // TextWriter textWriter = new StreamWriter(@System.Environment.GetEnvironmentVariable("OUTPUT_PATH"), true);
+        TextWriter textWriter = new StreamWriter(@System.Environment.GetEnvironmentVariable("OUTPUT_PATH"), true);
 
-        string[] firstMultipleInput = "5 3".TrimEnd().Split(' ');
+        string[] firstMultipleInput = Console.ReadLine().TrimEnd().Split(' ');
 
         int n = Convert.ToInt32(firstMultipleInput[0]);
         int k = Convert.ToInt32(firstMultipleInput[1]);
 
-        string[] secondMultipleInput = "4 3".TrimEnd().Split(' ');
+        string[] secondMultipleInput = Console.ReadLine().TrimEnd().Split(' ');
 
         int r_q = Convert.ToInt32(secondMultipleInput[0]);
         int c_q = Convert.ToInt32(secondMultipleInput[1]);
 
         List<List<int>> obstacles = new List<List<int>>();
-        string[] strings =
-        [
-            "5 5",
-            "4 2",
-            "2 3"
-        ];
 
         for (int i = 0; i < k; i++)
         {
-            obstacles.Add(strings[i]
+            obstacles.Add(Console.ReadLine()
                 .TrimEnd()
                 .Split(' ')
                 .Select(obstaclesTemp => Convert.ToInt32(obstaclesTemp))
@@ -337,42 +331,9 @@ public class QueensAttackSolution
 
         int result = QueensAttackResult.QueensAttack(n, k, r_q, c_q, obstacles);
 
-        // textWriter.WriteLine(result);
+        textWriter.WriteLine(result);
 
-        // textWriter.Flush();
-        // textWriter.Close();
+        textWriter.Flush();
+        textWriter.Close();
     }
-
-    // public static void QueensAttackMain(string[] args)
-    // {
-    //     TextWriter textWriter = new StreamWriter(@System.Environment.GetEnvironmentVariable("OUTPUT_PATH"), true);
-
-    //     string[] firstMultipleInput = Console.ReadLine().TrimEnd().Split(' ');
-
-    //     int n = Convert.ToInt32(firstMultipleInput[0]);
-    //     int k = Convert.ToInt32(firstMultipleInput[1]);
-
-    //     string[] secondMultipleInput = Console.ReadLine().TrimEnd().Split(' ');
-
-    //     int r_q = Convert.ToInt32(secondMultipleInput[0]);
-    //     int c_q = Convert.ToInt32(secondMultipleInput[1]);
-
-    //     List<List<int>> obstacles = new List<List<int>>();
-
-    //     for (int i = 0; i < k; i++)
-    //     {
-    //         obstacles.Add(Console.ReadLine()
-    //             .TrimEnd()
-    //             .Split(' ')
-    //             .Select(obstaclesTemp => Convert.ToInt32(obstaclesTemp))
-    //             .ToList());
-    //     }
-
-    //     int result = QueensAttackResult.QueensAttack(n, k, r_q, c_q, obstacles);
-
-    //     textWriter.WriteLine(result);
-
-    //     textWriter.Flush();
-    //     textWriter.Close();
-    // }
 }
