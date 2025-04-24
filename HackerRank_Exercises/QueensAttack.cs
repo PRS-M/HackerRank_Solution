@@ -70,7 +70,9 @@ class QueensAttackResult
         NormalizeMoveVectors(possibleMoves);
 
         // Calculate the amount of fields available for movement.
-        return GetTotalLength(possibleMoves);
+        int totalLength = GetTotalLength(possibleMoves);
+Console.WriteLine(totalLength);
+        return totalLength;
     }
 
     private static void EvaluateQueenMoveVectors(
@@ -147,7 +149,7 @@ class QueensAttackResult
             int axisX = queenPosition.X;
             int axisY = queenPosition.Y;
 
-            while (axisX < n && axisY < n && axisX > 1 && axisY > 1)
+            while (axisX <= n && axisY <= n && axisX > 1 && axisY > 1)
             {
                 axisX += intsMatrix[i, 0];
                 axisY += intsMatrix[i, 1];
