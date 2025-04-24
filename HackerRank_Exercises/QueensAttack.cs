@@ -169,7 +169,7 @@ class QueensAttackResult
         return queenToHypotenuseBoundaryVectors;
     }
 
-    public static Vector ConvertObstacleToMoveVector(Vector vector)
+    private static Vector ConvertObstacleToMoveVector(Vector vector)
     {
         if (vector.X < 0)
         {
@@ -192,7 +192,7 @@ class QueensAttackResult
         return new Vector(vector);
     }
 
-    public static bool IsSameDirection(Vector vectorA, Vector vectorB)
+    private static bool IsSameDirection(Vector vectorA, Vector vectorB)
     {
         if (vectorA.X >= 0 && vectorB.X >= 0
             && vectorA.Y >= 0 && vectorB.Y >= 0)
