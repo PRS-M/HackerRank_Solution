@@ -18,7 +18,7 @@ class QueensAttackResult
      *  5. 2D_INTEGER_ARRAY obstacles
      */
 
-    // To make it more difficult -> No LINQ usage
+    // To make it a bit more difficult -> No LINQ usage
     public static int QueensAttack(int n, int k, int r_q, int c_q, List<List<int>> obstacles)
     {
         Point queenPosition = new Point(c_q, r_q);
@@ -60,7 +60,26 @@ class QueensAttackResult
 
         List<Vector> possibleMoves = [];
 
-        if (queenToObstacleCrossVectors.Count == 0)
+        // Main directions
+        EvaluateQueenMoveVectors(queenToObstacleCrossVectors, queenToBoundaryVectors, queenToBoundaryVectorsCopy, possibleMoves);
+
+        // Diagonal directions
+        EvaluateQueenMoveVectors(queenToHypotenuseObstacleVectors, queenToHypotenuseBoundaryVectors, queenToHypotenuseBoundaryVectorsCopy, possibleMoves);
+
+        // Obstacle vectors conversion to possible move vectors
+        NormalizeMoveVectors(possibleMoves);
+
+        // Calculate the amount of fields available for movement.
+        return GetTotalLength(possibleMoves);
+    }
+
+    private static void EvaluateQueenMoveVectors(
+        List<Vector> queenToObstacleVectors,
+        List<Vector> queenToBoundaryVectors,
+        List<Vector> queenToBoundaryVectorsCopy,
+        List<Vector> possibleMoves)
+    {
+        if (queenToObstacleVectors.Count == 0)
         {
             possibleMoves.AddRange(queenToBoundaryVectors);
         }
@@ -69,7 +88,7 @@ class QueensAttackResult
             for (int i = 0; i < queenToBoundaryVectors.Count; i++)
             {
                 Vector queenToBoundaryVector = queenToBoundaryVectors[i];
-                foreach (Vector queenToObstacleCrossVector in queenToObstacleCrossVectors)
+                foreach (Vector queenToObstacleCrossVector in queenToObstacleVectors)
                 {
                     if (IsSameDirection(queenToBoundaryVector, queenToObstacleCrossVector))
                     {
@@ -80,37 +99,32 @@ class QueensAttackResult
             }
         }
 
-        if (queenToObstacleCrossVectors.Count != 0)
+        if (queenToObstacleVectors.Count != 0)
         {
             possibleMoves.AddRange(queenToBoundaryVectorsCopy);
         }
+    }
 
-        if (queenToHypotenuseObstacleVectors.Count == 0)
+    private static void NormalizeMoveVectors(List<Vector> possibleMoves)
+    {
+        for (int i = 0; i < possibleMoves.Count; i++)
         {
-            possibleMoves.AddRange(queenToHypotenuseBoundaryVectors);
-        }
-        else
-        {
-            for (int i = 0; i < queenToHypotenuseBoundaryVectors.Count; i++)
+            if (possibleMoves[i].Obstacle)
             {
-                Vector queenToHypotenuseBoundaryVector = queenToHypotenuseBoundaryVectors[i];
-                foreach (Vector queenToHypotenuseObstacleVector in queenToHypotenuseObstacleVectors)
-                {
-                    if (IsSameDirection(queenToHypotenuseBoundaryVector, queenToHypotenuseObstacleVector))
-                    {
-                        possibleMoves.Add(queenToHypotenuseObstacleVector);
-                        queenToHypotenuseBoundaryVectorsCopy.Remove(queenToHypotenuseBoundaryVector);
-                    }
-                }
+                possibleMoves[i] = ConvertObstacleToMoveVector(possibleMoves[i]);
             }
         }
+    }
 
-        if (queenToHypotenuseObstacleVectors.Count != 0)
+    private static int GetTotalLength(List<Vector> vectors)
+    {
+        int totalLength = 0;
+        foreach (Vector vector in vectors)
         {
-            possibleMoves.AddRange(queenToBoundaryVectorsCopy);
+            totalLength += vector.GetLength();
         }
-        
-        return 0;
+
+        return totalLength;
     }
 
     private static List<Vector> GetBoundaryVectors(int n, Point queenPosition)
@@ -155,51 +169,31 @@ class QueensAttackResult
         return queenToHypotenuseBoundaryVectors;
     }
 
-    public static Vector ExtractMovementFromObstacleVector(Vector vector)
+    public static Vector ConvertObstacleToMoveVector(Vector vector)
     {
-        bool recalculated = false;
         if (vector.X < 0)
         {
             vector.X++;
-            recalculated = true;
         }
         else if (vector.X > 0)
         {
             vector.X--;
-            recalculated = true;
         }
 
         if (vector.Y < 0)
         {
             vector.Y++;
-            recalculated = true;
         }
         else if (vector.Y > 0)
         {
             vector.Y--;
-            recalculated = true;
         }
 
-        if (recalculated)
-        {
-            Vector newVector = new(vector.X, vector.Y);
-
-            return newVector;
-        }
-        else
-        {
-            return vector;
-        }
+        return new Vector(vector);
     }
 
     public static bool IsSameDirection(Vector vectorA, Vector vectorB)
     {
-        // if (vectorA.X == 0 && vectorA.Y == 0
-        //     || vectorB.X == 0 && vectorB.Y == 0)
-        // {
-        //     return true;
-        // }
-
         if (vectorA.X >= 0 && vectorB.X >= 0
             && vectorA.Y >= 0 && vectorB.Y >= 0)
         {
@@ -251,6 +245,31 @@ internal record struct Vector
     public int X { get; set; }
     public int Y { get; set; }
     public bool Obstacle { get; set; } = false;
+
+    public readonly int GetLength()
+    {
+        if (X == 0 && Y == 0)
+        {
+            return 0;
+        }
+
+        if (X == 0)
+        {
+            return Math.Abs(Y);
+        }
+
+        if (Y == 0)
+        {
+            return Math.Abs(X);
+        }
+
+        if (X != 0 && Math.Abs(X) == Math.Abs(Y))
+        {
+            return Math.Abs(X);
+        }
+
+        return 0;
+    }
 
     public static Vector operator +(Vector a, Vector b)
     {
