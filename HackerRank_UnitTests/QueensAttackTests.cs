@@ -29,7 +29,7 @@ public class QueensAttackTests
         Vector vectorA = (Vector)a;
         Vector vectorB = (Vector)b;
 
-        bool result = vectorA.IsSameSign(vectorB);
+        bool result = vectorA.IsSameDirection(vectorB);
 
         Assert.That(result, Is.EqualTo(expectedResult));
     }
@@ -80,12 +80,6 @@ public class QueensAttackTests
         },
         new object[]
         {
-            new Vector(1, 10),
-            new Vector(1, 10),
-            true
-        },
-        new object[]
-        {
             new Vector(10, 1),
             new Vector(1, 10),
             false
@@ -106,6 +100,18 @@ public class QueensAttackTests
         {
             new Vector(0, 0),
             new Vector(0, 0),
+            true
+        },
+        new object[]
+        {
+            new Vector(4, -4),
+            new Vector(3, -3),
+            true
+        },
+        new object[]
+        {
+            new Vector(-4, 4),
+            new Vector(-3, 3),
             true
         },
     ];
@@ -237,7 +243,7 @@ public class QueensAttackTests
             N = 5,
             R_q = 3,
             C_q = 1,
-            ExpectedResult = 5,
+            ExpectedResult = 4,
             Obstacles = new List<List<int>>
             {
                 new List<int> { 2, 1 },
@@ -248,6 +254,7 @@ public class QueensAttackTests
                 new List<int> { 3, 4 },
                 new List<int> { 3, 5 },
                 new List<int> { 1, 3 },
+                new List<int> { 2, 2 },
                 new List<int> { 5, 4 },
                 new List<int> { 5, 4 },
                 new List<int> { 5, 2 },

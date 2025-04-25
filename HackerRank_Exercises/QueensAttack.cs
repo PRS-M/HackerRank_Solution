@@ -94,7 +94,7 @@ public class QueensAttackResult
                 Vector queenToBoundaryVector = queenToBoundaryVectors[i];
                 foreach (Vector queenToObstacleCrossVector in queenToObstacleVectors)
                 {
-                    if (queenToBoundaryVector.IsSameSign(queenToObstacleCrossVector))
+                    if (queenToBoundaryVector.IsSameDirection(queenToObstacleCrossVector))
                     {
                         possibleMoves.Add(queenToObstacleCrossVector);
                         queenToBoundaryVectorsCopy.Remove(queenToBoundaryVector);
@@ -277,25 +277,27 @@ internal record struct Vector
         return 0;
     }
 
-    public readonly bool IsSameSign(Vector other)
+    public readonly bool IsSameDirection(Vector other)
     {
-        bool sameDirectionX = X * other.X > 0;
-        bool sameDirectionY = Y * other.Y > 0;
+        bool sameSignX = X * other.X > 0;
+        bool sameSignY = Y * other.Y > 0;
 
-        if (sameDirectionX && sameDirectionY)
-        {
+        // Zero-length vector
+        if (X == 0 && Y == 0 || other.X == 0 && other.Y == 0)
             return true;
-        }
 
-        if (sameDirectionX && other.Y == 0)
-        {
+        // Vertical, same direction
+        if (X == 0 && Y != 0 && sameSignY)
             return true;
-        }
 
-        if (sameDirectionY && other.X == 0)
-        {
+        // Horizontal, same direction
+        if (Y == 0 && X != 0 && sameSignX)
             return true;
-        }
+
+        // Diagonal
+        if (sameSignX && sameSignY
+            && (X == other.X && Y == other.Y || Math.Abs(X) == Math.Abs(Y)))
+            return true;
 
         return false;
     }
