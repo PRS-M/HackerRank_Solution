@@ -302,6 +302,26 @@ internal record struct Vector
         return false;
     }
 
+    public static bool operator > (Vector a, Vector b)
+    {
+        return a.GetLength() > b.GetLength() && a.IsSameDirection(b);
+    }
+
+    public static bool operator < (Vector a, Vector b)
+    {
+        return a.GetLength() < b.GetLength() && a.IsSameDirection(b);
+    }
+
+    public static bool operator >= (Vector a, Vector b)
+    {
+        return a == b || a.GetLength() > b.GetLength() && a.IsSameDirection(b);
+    }
+
+        public static bool operator <= (Vector a, Vector b)
+    {
+        return a == b || a.GetLength() < b.GetLength() && a.IsSameDirection(b);
+    }
+
     public static Vector operator +(Vector a, Vector b)
     {
         return new Vector(a.X + b.X, a.Y + b.Y);
