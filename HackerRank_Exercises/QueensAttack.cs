@@ -58,7 +58,7 @@ public class QueensAttackResult
         List<Vector> queenToHypotenuseBoundaryVectorsCopy = new(queenToHypotenuseBoundaryVectors);
         List<Vector> queenToBoundaryVectorsCopy = new(queenToBoundaryVectors);
 
-        List<Vector> possibleMoves = [];
+        HashSet<Vector> possibleMoves = [];
 
         // Main directions
         EvaluateQueenMoveVectors(queenToObstacleCrossVectors, queenToBoundaryVectors, queenToBoundaryVectorsCopy, possibleMoves);
@@ -79,11 +79,11 @@ public class QueensAttackResult
         List<Vector> queenToObstacleVectors,
         List<Vector> queenToBoundaryVectors,
         List<Vector> queenToBoundaryVectorsCopy,
-        List<Vector> possibleMoves)
+        HashSet<Vector> possibleMoves)
     {
         if (queenToObstacleVectors.Count == 0)
         {
-            possibleMoves.AddRange(queenToBoundaryVectors);
+            possibleMoves.UnionWith(queenToBoundaryVectors);
         }
         else
         {
@@ -103,22 +103,31 @@ public class QueensAttackResult
 
         if (queenToObstacleVectors.Count != 0)
         {
-            possibleMoves.AddRange(queenToBoundaryVectorsCopy);
+            possibleMoves.UnionWith(queenToBoundaryVectorsCopy);
         }
     }
 
-    private static void NormalizeMoveVectors(List<Vector> possibleMoves)
+    private static void NormalizeMoveVectors(HashSet<Vector> possibleMoves)
     {
-        for (int i = 0; i < possibleMoves.Count; i++)
+        HashSet<Vector> tempNew = new HashSet<Vector>();
+        HashSet<Vector> tempOld = new HashSet<Vector>();
+
+        foreach (Vector v in possibleMoves)
         {
-            if (possibleMoves[i].Obstacle)
+            if (v.Obstacle)
             {
-                possibleMoves[i] = ConvertObstacleToMoveVector(possibleMoves[i]);
+                Vector converted  = ConvertObstacleToMoveVector(v);
+
+                tempNew.Add(converted);
+                tempOld.Add(v);
             }
         }
+
+        possibleMoves.ExceptWith(tempOld);
+        possibleMoves.UnionWith(tempNew);
     }
 
-    private static int GetTotalLength(List<Vector> vectors)
+    private static int GetTotalLength(HashSet<Vector> vectors)
     {
         int totalLength = 0;
         foreach (Vector vector in vectors)
@@ -131,38 +140,60 @@ public class QueensAttackResult
 
     private static List<Vector> GetBoundaryVectors(int n, Point queenPosition)
     {
-        return
+        List<Vector> vectors = 
         [
             new Vector(1 - queenPosition.X, 0),
             new Vector(0, 1 - queenPosition.Y),
             new Vector(n - queenPosition.X, 0),
             new Vector(0, n - queenPosition.Y)
         ];
+
+        for (int i = 0; i < vectors.Count; i++)
+        {
+            Vector vector = vectors[i];
+            if (vector.X == 0 && vector.Y == 0)
+            {
+                vectors.Remove(vector);
+            }
+        }
+
+        return vectors;
     }
 
     private static List<Vector> GetHypotenuseBoundaryVectors(int n, Point queenPosition)
     {
-        int[,] intsMatrix = SignCombinationsGenerator.GenerateMatrixCombinations([1, 1]);
+        int[,] directionsMatrix = SignCombinationsGenerator.GenerateMatrixCombinations([1, 1]);
         List<Vector> queenToHypotenuseBoundaryVectors = [];
-        for (int i = 0; i < intsMatrix.GetLength(0); i++)
+
+        for (int i = 0; i < directionsMatrix.GetLength(0); i++)
         {
             int axisX = queenPosition.X;
             int axisY = queenPosition.Y;
 
-            while (axisX <= n && axisY <= n && axisX > 1 && axisY > 1)
+            while (axisX <= n
+                   && axisX >= 1
+                   && axisY <= n
+                   && axisY >= 1)
             {
-                axisX += intsMatrix[i, 0];
-                axisY += intsMatrix[i, 1];
+                axisX += directionsMatrix[i, 0];
+                axisY += directionsMatrix[i, 1];
             }
 
-            if (axisX == n
-                || axisX == 1
-                || axisY == n
-                || axisY == 1)
+            bool pastEdgesAfterConversion = axisX > n
+                                        || axisX < 1
+                                        || axisY > n
+                                        || axisY < 1;
+
+            if (pastEdgesAfterConversion)
             {
-                Point point = new Point(axisX, axisY);
-                Vector vectorToBoundary = new Vector(queenPosition, point);
-                queenToHypotenuseBoundaryVectors.Add(vectorToBoundary);
+                axisX -= directionsMatrix[i, 0];
+                axisY -= directionsMatrix[i, 1];
+                if (axisX != queenPosition.X && axisY != queenPosition.Y)
+                {
+                    Point point = new Point(axisX, axisY);
+                    Vector vectorToBoundary = new Vector(queenPosition, point);
+                    queenToHypotenuseBoundaryVectors.Add(vectorToBoundary);
+                }
 
                 Console.WriteLine($"Reached boundary: x: {axisX}, y: {axisY}.");
             }

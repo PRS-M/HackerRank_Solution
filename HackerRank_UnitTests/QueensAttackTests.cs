@@ -59,7 +59,7 @@ public class QueensAttackTests
 
         yield return new QueensAttackInput
         {
-            N = 4,
+            N = 5,
             R_q = 4,
             C_q = 3,
             ExpectedResult = 14,
