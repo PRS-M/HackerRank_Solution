@@ -1,6 +1,8 @@
 using System;
+using System.Runtime.CompilerServices;
 using HackerRank_Exercises.Helpers;
 
+[assembly:InternalsVisibleTo("HackerRank_UnitTests")]
 namespace HackerRank_Exercises;
 
 public class QueensAttackResult
@@ -92,7 +94,7 @@ public class QueensAttackResult
                 Vector queenToBoundaryVector = queenToBoundaryVectors[i];
                 foreach (Vector queenToObstacleCrossVector in queenToObstacleVectors)
                 {
-                    if (IsSameDirection(queenToBoundaryVector, queenToObstacleCrossVector))
+                    if (queenToBoundaryVector.IsSameSign(queenToObstacleCrossVector))
                     {
                         possibleMoves.Add(queenToObstacleCrossVector);
                         queenToBoundaryVectorsCopy.Remove(queenToBoundaryVector);
@@ -224,35 +226,6 @@ public class QueensAttackResult
 
         return new Vector(vector);
     }
-
-    private static bool IsSameDirection(Vector vectorA, Vector vectorB)
-    {
-        if (vectorA.X >= 0 && vectorB.X >= 0
-            && vectorA.Y >= 0 && vectorB.Y >= 0)
-        {
-            return true;
-        }
-
-        if (vectorA.X < 0 && vectorB.X < 0
-            && vectorA.Y < 0 && vectorB.Y < 0)
-        {
-            return true;
-        }
-
-        if (vectorA.X >= 0 && vectorB.X >= 0
-            && vectorA.Y < 0 && vectorB.Y < 0)
-        {
-            return true;
-        }
-
-        if (vectorA.X < 0 && vectorB.X < 0
-            && vectorA.Y >= 0 && vectorB.Y >= 0)
-        {
-            return true;
-        }
-
-        return false;
-    }
 }
 
 internal record struct Vector
@@ -302,6 +275,29 @@ internal record struct Vector
         }
 
         return 0;
+    }
+
+    public readonly bool IsSameSign(Vector other)
+    {
+        bool sameDirectionX = X * other.X > 0;
+        bool sameDirectionY = Y * other.Y > 0;
+
+        if (sameDirectionX && sameDirectionY)
+        {
+            return true;
+        }
+
+        if (sameDirectionX && other.Y == 0)
+        {
+            return true;
+        }
+
+        if (sameDirectionY && other.X == 0)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public static Vector operator +(Vector a, Vector b)
