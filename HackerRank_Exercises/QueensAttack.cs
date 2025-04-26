@@ -26,6 +26,35 @@ public class QueensAttackResult
         Point queenPosition = new Point(c_q, r_q);
 
         // Vectors from queen to obstacles.
+        (List<Vector> queenToObstacleCrossVectors, List<Vector> queenToHypotenuseObstacleVectors)
+            = GetObstacleVectors(obstacles, queenPosition);
+
+        // Vectors from queen to the boundaries (last cell inclusive)
+        List<Vector> queenToHypotenuseBoundaryVectors = GetHypotenuseBoundaryVectors(n, queenPosition);
+        List<Vector> queenToBoundaryVectors = GetBoundaryVectors(n, queenPosition);
+
+        List<Vector> queenToHypotenuseBoundaryVectorsCopy = new(queenToHypotenuseBoundaryVectors);
+        List<Vector> queenToBoundaryVectorsCopy = new(queenToBoundaryVectors);
+
+        HashSet<Vector> possibleMoves = [];
+
+        // Main directions
+        EvaluateQueenMoveVectors(queenToObstacleCrossVectors, queenToBoundaryVectors, queenToBoundaryVectorsCopy, possibleMoves);
+
+        // Diagonal directions
+        EvaluateQueenMoveVectors(queenToHypotenuseObstacleVectors, queenToHypotenuseBoundaryVectors, queenToHypotenuseBoundaryVectorsCopy, possibleMoves);
+
+        // Obstacle vectors conversion to possible move vectors
+        NormalizeMoveVectors(possibleMoves);
+
+        // Calculate the amount of fields available for movement.
+        int totalLength = GetTotalLength(possibleMoves);
+        Console.WriteLine(totalLength);
+        return totalLength;
+    }
+
+    private static (List<Vector> queenToObstacleCrossVectors, List<Vector> queenToHypotenuseObstacleVectors) GetObstacleVectors(List<List<int>> obstacles, Point queenPosition)
+    {
         List<Vector> queenToObstacleCrossVectors = [];
         List<Vector> queenToHypotenuseObstacleVectors = [];
 
@@ -53,28 +82,7 @@ public class QueensAttackResult
             Console.WriteLine($"Vector: {vector.X}, {vector.Y}");
         }
 
-        // Vectors from queen to the boundaries (last cell inclusive)
-        List<Vector> queenToHypotenuseBoundaryVectors = GetHypotenuseBoundaryVectors(n, queenPosition);
-        List<Vector> queenToBoundaryVectors = GetBoundaryVectors(n, queenPosition);
-
-        List<Vector> queenToHypotenuseBoundaryVectorsCopy = new(queenToHypotenuseBoundaryVectors);
-        List<Vector> queenToBoundaryVectorsCopy = new(queenToBoundaryVectors);
-
-        HashSet<Vector> possibleMoves = [];
-
-        // Main directions
-        EvaluateQueenMoveVectors(queenToObstacleCrossVectors, queenToBoundaryVectors, queenToBoundaryVectorsCopy, possibleMoves);
-
-        // Diagonal directions
-        EvaluateQueenMoveVectors(queenToHypotenuseObstacleVectors, queenToHypotenuseBoundaryVectors, queenToHypotenuseBoundaryVectorsCopy, possibleMoves);
-
-        // Obstacle vectors conversion to possible move vectors
-        NormalizeMoveVectors(possibleMoves);
-
-        // Calculate the amount of fields available for movement.
-        int totalLength = GetTotalLength(possibleMoves);
-        Console.WriteLine(totalLength);
-        return totalLength;
+        return (queenToObstacleCrossVectors, queenToHypotenuseObstacleVectors);
     }
 
     private static void EvaluateQueenMoveVectors(
