@@ -274,6 +274,11 @@ internal record struct Vector
             return Math.Abs(X);
         }
 
+        if (X != 0 && Math.Abs(X) != Math.Abs(Y))
+        {
+            return (int)Math.Sqrt(X * X + Y * Y);
+        }
+
         return 0;
     }
 

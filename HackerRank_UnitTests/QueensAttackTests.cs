@@ -23,7 +23,7 @@ public class QueensAttackTests
         Assert.That(result, Is.EqualTo(queensAttackInput.ExpectedResult));
     }
 
-    [TestCaseSource(nameof(VectorCases))]
+    [TestCaseSource(nameof(VectorDirectionCases))]
     public void CheckIfSameDirectionCalculatedCorrectly(object a, object b, bool expectedResult)
     {
         Vector vectorA = (Vector)a;
@@ -34,7 +34,130 @@ public class QueensAttackTests
         Assert.That(result, Is.EqualTo(expectedResult));
     }
 
-    private static object[] VectorCases =>
+    [TestCaseSource(nameof(VectorLengthCases))]
+    public void CheckIfVectorLengthCalculatedCorrectly(object a, int expectedLength)
+    {
+        Vector vector = (Vector)a;
+        int length = vector.GetLength();
+
+        Assert.That(length, Is.EqualTo(expectedLength));
+    }
+
+    [TestCaseSource(nameof(VectorComparisonCases))]
+    public void CheckVectorComparisonOperators(object a, object b, int equality)
+    {
+        Vector vectorA = (Vector)a;
+        Vector vectorB = (Vector)b;
+
+        bool greaterResult = vectorA > vectorB;
+        bool lessResult = vectorA < vectorB;
+        bool greaterOrEqual = vectorA >= vectorB;
+        bool lessOrEqual = vectorA <= vectorB;
+        bool equal = vectorA == vectorB;
+
+        switch (equality)
+        {
+            case 0:
+                Assert.That(greaterResult, Is.EqualTo(false));
+                Assert.That(lessResult, Is.EqualTo(false));
+                Assert.That(greaterOrEqual, Is.EqualTo(true));
+                Assert.That(lessOrEqual, Is.EqualTo(true));
+                Assert.That(equal, Is.EqualTo(true));
+                break;
+            case 1:
+                Assert.That(greaterResult, Is.EqualTo(false));
+                Assert.That(lessResult, Is.EqualTo(false));
+                Assert.That(greaterOrEqual, Is.EqualTo(true));
+                Assert.That(lessOrEqual, Is.EqualTo(true));
+                Assert.That(equal, Is.EqualTo(true));
+                break;
+            case 2:
+                Assert.That(greaterResult, Is.EqualTo(true));
+                Assert.That(lessResult, Is.EqualTo(false));
+                Assert.That(greaterOrEqual, Is.EqualTo(true));
+                Assert.That(lessOrEqual, Is.EqualTo(false));
+                Assert.That(equal, Is.EqualTo(false));
+                break;
+            case -1:
+                Assert.That(greaterResult, Is.EqualTo(false));
+                Assert.That(lessResult, Is.EqualTo(false));
+                Assert.That(greaterOrEqual, Is.EqualTo(true));
+                Assert.That(lessOrEqual, Is.EqualTo(true));
+                Assert.That(equal, Is.EqualTo(true));
+                break;
+            case -2:
+                Assert.That(greaterResult, Is.EqualTo(false));
+                Assert.That(lessResult, Is.EqualTo(true));
+                Assert.That(greaterOrEqual, Is.EqualTo(false));
+                Assert.That(lessOrEqual, Is.EqualTo(true));
+                Assert.That(equal, Is.EqualTo(false));
+                break;
+        }
+    }
+
+    private static object[] VectorLengthCases =>
+    [
+        new object[]
+        {
+            new Vector(4, 4),
+            4
+        },
+        new object[]
+        {
+            new Vector(-4, -4),
+            4
+        },
+        new object[]
+        {
+            new Vector(4, 0),
+            4
+        },
+        new object[]
+        {
+            new Vector(0, 4),
+            4
+        },
+        new object[]
+        {
+            new Vector(-4, 0),
+            4
+        },
+        new object[]
+        {
+            new Vector(0, -4),
+            4
+        },
+    ];
+
+    private static object[] VectorComparisonCases =>
+    [
+        new object[]
+        {
+            new Vector(10, 0),
+            new Vector (5, 0),
+            2
+        },
+        new object[]
+        {
+            new Vector(5, 0),
+            new Vector (5, 0),
+            1
+        },
+        new object[]
+        {
+            new Vector(5, 0),
+            new Vector (10, 0),
+            -2
+        },
+        new object[]
+        {
+            new Vector(5, 0),
+            new Vector (5, 0),
+            -1
+        }
+    ];
+
+    private static object[] VectorDirectionCases =>
     [
         new object[]
         {
