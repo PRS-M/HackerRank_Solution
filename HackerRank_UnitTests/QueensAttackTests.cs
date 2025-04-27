@@ -390,7 +390,7 @@ public class QueensAttackTests
             N = 100,
             R_q = 48,
             C_q = 81,
-            ExpectedResult = 6,
+            ExpectedResult = 40,
             Obstacles = new List<List<int>>
             {
                 new List<int>{ 54, 87 },

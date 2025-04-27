@@ -7,7 +7,6 @@ namespace HackerRank_Exercises;
 
 public class QueensAttackResult
 {
-
     /*
      * Complete the 'queensAttack' function below.
      *
@@ -68,14 +67,14 @@ public class QueensAttackResult
 
             // Add only blocking obstacles (8 directions).
             // This way non-blocking obstacles are removed.
-            if (vector.X == 0 && vector.Y != 0
-                || vector.Y == 0 && vector.X != 0)
+            if (vector.Y == 0 && vector.X != 0
+                || vector.X == 0 && vector.Y != 0)
             {
-                queenToObstacleCrossVectors.Add(vector);
+                FilterAndAddIfSmallerVector(queenToObstacleCrossVectors, vector);
             }
             else if (Math.Abs(vector.X) == Math.Abs(vector.Y))
             {
-                queenToHypotenuseObstacleVectors.Add(vector);
+                FilterAndAddIfSmallerVector(queenToHypotenuseObstacleVectors, vector);
             }
 
             Console.WriteLine($"Obstacle: {obstaclePoint.X}, {obstaclePoint.Y}");
@@ -83,6 +82,38 @@ public class QueensAttackResult
         }
 
         return (queenToObstacleCrossVectors, queenToHypotenuseObstacleVectors);
+    }
+
+    private static void FilterAndAddIfSmallerVector(List<Vector> existingVectors, Vector vector)
+    {
+        // If no match, add
+        // If bigger found, remove and add a new one (replace)
+        // If shorter found, do not add
+        if (existingVectors.Count == 0)
+        {
+            existingVectors.Add(vector);
+        }
+        else
+        {
+            List<Vector> removalList = [];
+            bool sameOrShorterExists = false;
+            for (int i = 0; i < existingVectors.Count; i++)
+            {
+                Vector existingVector = existingVectors[i];
+                if (existingVector > vector)
+                    removalList.Add(existingVector);
+                if (existingVector == vector || existingVector < vector)
+                    sameOrShorterExists = true;
+            }
+
+            if (!sameOrShorterExists)
+                existingVectors.Add(vector);
+
+            foreach (Vector vectorToRemove in removalList)
+            {
+                existingVectors.Remove(vectorToRemove);
+            }
+        }
     }
 
     private static void EvaluateQueenMoveVectors(
