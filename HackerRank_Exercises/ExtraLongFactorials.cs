@@ -1,4 +1,3 @@
-using System;
 using System.Numerics;
 
 namespace HackerRank_Exercises;
@@ -23,7 +22,7 @@ class ExtraLongFactorialsResult
             for (; index <= n; index++)
             {
                 overflow = (int)Math.Log10(result) + 1 >= 19;
-                
+
                 if (overflow)
                     break;
 

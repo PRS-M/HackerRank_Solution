@@ -1,17 +1,3 @@
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Collections;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
-using System.Text;
-using System;
-
 namespace HackerRank_Exercises;
 
 class MagicSquareResult
@@ -22,9 +8,9 @@ class MagicSquareResult
      * The function is expected to return an INTEGER.
      * The function accepts 2D_INTEGER_ARRAY s as parameter.
      */
-     
+
     private delegate int CellFormula(int a, int b);
-    
+
     public static int FormingMagicSquare(List<List<int>> s)
     {
         /* Simplification - use of Edouard Lucas' method for creation of the magic squares
@@ -33,79 +19,79 @@ class MagicSquareResult
          * Additionally, to construct all combinations of the square
          * "-" sign must be added in all possible combinations to the numbers.
          */
-                
+
         int centerValue = s[1][1];
         Console.WriteLine($"Center value: {centerValue}.");
-        
+
         CellFormula[,] magicSquareFormulas = new CellFormula[,]
         {
             { (a, b) => 5 - b, (a, b) => 5 + (a + b), (a, b) => 5 - a },
             { (a, b) => 5 - (a - b), (a, b) => 5, (a, b) => 5 + (a - b) },
             { (a, b) => 5 + a, (a, b) => 5 - (a + b), (a, b) => 5 + b }
         };
-        
+
         int[] components = {1, 3};
         int[][] combinations = CreateAllCombinations(components);
-        
+
         int[][,] magicSquaresArray = CreateAllPossibleMagicSquares(combinations, magicSquareFormulas);
-        
+
         int[] conversionCosts = GetAllConversionsCosts(combinations.Length, magicSquaresArray, s);
 
         return conversionCosts.Min();
     }
-    
+
     private static int[][] CreateAllCombinations(int[] components)
     {
         int combinations = 1 << components.Length;
         int[][] combinedComponents = new int[combinations * 2][];
-        
+
         for (int mask = 0; mask < combinations; mask++)
         {
             int[] combination = CreateCombination(mask, components);
             int[] reversedCombination = combination.Reverse().ToArray();
-            
+
             combinedComponents[mask] = combination;
             combinedComponents[mask + combinations] = reversedCombination;
         }
-        
+
         foreach (int[] combination in combinedComponents)
         {
             Console.WriteLine($"Combination: [{string.Join(", ", combination)}]");
         }
-        
-        Console.WriteLine();        
+
+        Console.WriteLine();
         return combinedComponents;
     }
-    
+
     private static int[] CreateCombination(int mask, int[] components)
     {
         int length = components.Length;
         int[] combination = new int[length];
-            
+
         for (int i = 0; i < length; i++)
         {
             if ((mask & (1 << i)) == 0)
             {
                 combination[i] = components[i];
-            }   
+            }
             else
             {
                 combination[i] = -components[i];
             }
         }
-        
+
         return combination;
     }
-    
+
     private static int[][,] CreateAllPossibleMagicSquares(int[][] combinations, CellFormula[,] magicSquareFormulas)
     {
         int[][,] magicSquaresArray = new int[combinations.Length][,];
-        
+
         for (int combinationNumber = 0; combinationNumber < combinations.Length; combinationNumber++)
         {
             int[] combination = combinations[combinationNumber];
             int[,] magicSquare = new int[3,3];
-            
+
             for (int i = 0; i < magicSquareFormulas.GetLength(0); i++)
             {
                 for (int j = 0; j < magicSquareFormulas.GetLength(1); j++)
@@ -114,26 +100,26 @@ class MagicSquareResult
                     magicSquare[i,j] = cellValue;
                     Console.Write($"{cellValue} ");
                 }
-                
+
                 Console.WriteLine();
             }
-            
+
             magicSquaresArray[combinationNumber] = magicSquare;
             Console.WriteLine();
         }
-        
+
         return magicSquaresArray;
     }
-    
+
     private static int GetConversionCost(int value, int newValue)
     {
         return Math.Abs(value - newValue);
     }
-    
+
     private static int[] GetAllConversionsCosts(int numberOfCases, int[][,] magicSquaresArray, List<List<int>> input)
     {
         int[] conversionCosts = new int[numberOfCases];
-        
+
         for (int i = 0; i < magicSquaresArray.Length; i++)
         {
             int conversionCost = 0;
@@ -143,14 +129,14 @@ class MagicSquareResult
                 {
                     int cellValue = magicSquaresArray[i][j,k];
                     int inputCellValue = input[j][k];
-                
+
                     conversionCost += GetConversionCost(inputCellValue, cellValue);
                 }
             }
-            
+
             conversionCosts[i] = conversionCost;
         }
-        
+
         return conversionCosts;
     }
 }

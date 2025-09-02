@@ -1,8 +1,7 @@
-using System;
 using System.Runtime.CompilerServices;
 using HackerRank_Exercises.Helpers;
 
-[assembly:InternalsVisibleTo("HackerRank_UnitTests")]
+[assembly: InternalsVisibleTo("HackerRank_UnitTests")]
 namespace HackerRank_Exercises;
 
 public class QueensAttackResult
@@ -181,7 +180,7 @@ public class QueensAttackResult
 
     private static List<Vector> GetBoundaryVectors(int n, Point queenPosition)
     {
-        List<Vector> vectors = 
+        List<Vector> vectors =
         [
             new Vector(1 - queenPosition.X, 0),
             new Vector(0, 1 - queenPosition.Y),
